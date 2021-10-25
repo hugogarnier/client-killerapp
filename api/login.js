@@ -11,6 +11,7 @@ const login = async ({ email, password }) => {
         password: password,
       },
     });
+    console.log(user);
     const token = user.headers.authorization.replace("Bearer ", "");
     storeData(token);
 

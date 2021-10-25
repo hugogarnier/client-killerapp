@@ -10,7 +10,9 @@ import {
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import { deleteStoreData } from "../api/asyncStorage";
+import { io } from "socket.io-client";
+
+import { deleteStoreData, getStoreData } from "../api/asyncStorage";
 
 const homeScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
@@ -21,8 +23,16 @@ const homeScreen = ({ navigation }) => {
   //TODO: review previousgame not updating
 
   useEffect(() => {
-    async function getUserInfo() {}
-    getUserInfo();
+    const socket = io("http://localhost:3000");
+    async function getPreviousGame() {
+      const token = await getStoreData();
+      socket.emit("addUser", token);
+      socket.emit("previousCode", token);
+      socket.on("getPreviousCode", (data) => {
+        setPreviousGame(data.previousCode);
+      });
+    }
+    getPreviousGame();
   }, []);
 
   useLayoutEffect(() => {
