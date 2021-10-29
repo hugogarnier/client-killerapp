@@ -1,25 +1,20 @@
 import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
-const setNewGame = async () => {
+const setGameCode = async ({ code }) => {
   try {
     const token = await getStoreData();
     if (token) {
-      let randomCode = Math.random().toString(36).substring(7);
-
-      const newGame = await axios({
+      const game = await axios({
         method: "post",
-        url: "http://localhost:3000/newgame",
-        data: {
-          code: randomCode,
-        },
+        url: `http://localhost:3000/${code}`,
         headers: {
           authorization: token,
         },
       });
 
-      if (newGame) {
-        return { randomCode };
+      if (game) {
+        return true;
       } else {
         return false;
       }
@@ -30,4 +25,4 @@ const setNewGame = async () => {
   }
 };
 
-export default setNewGame;
+export default setGameCode;

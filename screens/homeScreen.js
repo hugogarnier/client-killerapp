@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useLayoutEffect } from "react";
+import React, { useState, useEffect, useLayoutEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
@@ -7,29 +7,31 @@ import {
   ActivityIndicator,
   TextInput,
   Text,
+  FlatList,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
-import { io } from "socket.io-client";
+import { SocketContext } from "../context/socket";
 
 import { deleteStoreData, getStoreData } from "../api/asyncStorage";
+import setNewGame from "../api/setNewGame";
+import setGameCode from "../api/setGameCode";
 
 const homeScreen = ({ navigation }) => {
+  const socket = useContext(SocketContext);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [code, setCode] = useState("");
   const [error, setError] = useState("");
-  const [previousGame, setPreviousGame] = useState("");
-  //TODO: review previousgame not updating
+  const [previousGames, setPreviousGames] = useState([]);
 
   useEffect(() => {
-    const socket = io("http://localhost:3000");
     async function getPreviousGame() {
       const token = await getStoreData();
-      socket.emit("addUser", token);
-      socket.emit("previousCode", token);
-      socket.on("getPreviousCode", (data) => {
-        setPreviousGame(data.previousCode);
+
+      // socket.emit("addUser", token);
+      socket.emit("previousCodes", token, (data) => {
+        setPreviousGames(data.previousCodes);
       });
     }
     getPreviousGame();
@@ -52,6 +54,15 @@ const homeScreen = ({ navigation }) => {
     });
   }, [navigation]);
 
+  const handleCreateGame = () => {
+    setNewGame().then(({ randomCode }) => {
+      randomCode &&
+        navigation.navigate("PlayerScreen", {
+          code: randomCode,
+        });
+    });
+  };
+
   const handleLogOut = () => {
     deleteStoreData();
     navigation.reset({
@@ -64,41 +75,20 @@ const homeScreen = ({ navigation }) => {
     });
   };
 
-  const enterGameFunction = (code, firstName, lastName) => {
-    // enterGame(code, firstName, lastName).then(
-    //   ({ started, closed, noDoc, admin }) => {
-    //     if (noDoc) {
-    //       setError("Code invalide");
-    //     } else {
-    //       if (closed) {
-    //         // Alert.alert(`La partie est terminée ! Le gagnant est ${winner}`);
-    //         Alert.alert(`La partie est terminée !`);
-    //         setError("Partie terminée");
-    //       } else {
-    //         if (admin === currentUserUID && started === false) {
-    //           navigation.navigate("Admin", {
-    //             code: code,
-    //           });
-    //         } else {
-    //           navigation.navigate("StartPlayer", {
-    //             code: code,
-    //           });
-    //         }
-    //         setError("");
-    //       }
-    //     }
-    //   }
-    // );
-  };
+  // const handleClickPreviousGame = async () => {
+  //   await setGameCode(previousGames);
+  //   navigation.navigate("PlayerScreen", {
+  //     code: previousGames,
+  //   });
+  // };
 
-  const handleEnter = () => {
-    enterGameFunction(code, firstName, lastName);
-  };
+  const Item = ({ code }) => (
+    <View>
+      <Text>{code}</Text>
+    </View>
+  );
 
-  const handleClickPreviousGame = () => {
-    let code = previousGame;
-    enterGameFunction(code, firstName, lastName);
-  };
+  const renderItem = ({ item }) => <Item code={item} />;
 
   return (
     <View style={styles.container}>
@@ -107,7 +97,7 @@ const homeScreen = ({ navigation }) => {
       <View style={styles.startNewGameContainer}>
         <Pressable
           style={styles.startNewGamePressable}
-          onPress={() => navigation.navigate("StartGame")}
+          onPress={handleCreateGame}
         >
           <Text style={styles.startNewGameText}>
             Démarrer une nouvelle partie
@@ -126,16 +116,19 @@ const homeScreen = ({ navigation }) => {
             errorMessage={error}
           />
         </View>
-        {previousGame ? (
+        {previousGames ? (
           <View style={styles.previousGameContainer}>
             <Pressable
               style={styles.inputPreviousCodePressable}
-              onPress={handleClickPreviousGame}
+              // onPress={handleClickPreviousGame}
             >
-              <Text style={styles.inputPreviousCodeText}>
-                Partie précédente
-              </Text>
-              <Text style={styles.inputPreviousCodeText}>{previousGame}</Text>
+              <Text style={styles.inputPreviousCodeText}>Partie en cours</Text>
+              {/* <Text style={styles.inputPreviousCodeText}>{previousGames}</Text> */}
+              <FlatList
+                data={previousGames}
+                renderItem={renderItem}
+                keyExtractor={(item) => item}
+              />
             </Pressable>
           </View>
         ) : (
@@ -158,8 +151,8 @@ const styles = StyleSheet.create({
   },
 
   startNewGameContainer: {
-    // width: '100%',
-    flex: 2,
+    // width: "100%",
+    flex: 1,
     flexDirection: "row",
     marginBottom: 20,
     backgroundColor: "#8292a8",
@@ -182,8 +175,8 @@ const styles = StyleSheet.create({
   },
 
   inputCodeContainer: {
-    // width: '100%',
-    flex: 2,
+    width: "100%",
+    flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
