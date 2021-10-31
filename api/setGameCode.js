@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
-const setGameCode = async ({ code }) => {
+const setGameCode = async (code) => {
   try {
     const token = await getStoreData();
     if (token) {

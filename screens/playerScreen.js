@@ -41,7 +41,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
     async function getUser() {
       const token = await getStoreData();
       // socket.emit("addUser", token);
-      socket.emit("userInfo", token, (data) => {
+      socket.emit("userInfo", token, code, (data) => {
         setFirstname(data.firstname);
         setLastname(data.lastname);
         setAlive(data.alive);
@@ -53,7 +53,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
     // return () => {
     //   socket.emit("disconnect");
     // };
-  }, []);
+  }, [close, started, alive, lastname, firstname]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

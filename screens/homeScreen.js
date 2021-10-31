@@ -8,6 +8,7 @@ import {
   TextInput,
   Text,
   FlatList,
+  Button,
 } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -22,20 +23,19 @@ const homeScreen = ({ navigation }) => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [code, setCode] = useState("");
+  const [previousCode, setPreviousCode] = useState("");
   const [error, setError] = useState("");
   const [previousGames, setPreviousGames] = useState([]);
 
   useEffect(() => {
     async function getPreviousGame() {
       const token = await getStoreData();
-
-      // socket.emit("addUser", token);
       socket.emit("previousCodes", token, (data) => {
         setPreviousGames(data.previousCodes);
       });
     }
     getPreviousGame();
-  }, []);
+  }, [previousGames]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -63,6 +63,21 @@ const homeScreen = ({ navigation }) => {
     });
   };
 
+  const handleEnterGame = () => {
+    setGameCode(code);
+    navigation.navigate("PlayerScreen", {
+      code: code,
+    });
+  };
+
+  const handleEnterPreviousGame = () => {
+    console.log("code");
+    // setGameCode(code);
+    // navigation.navigate("PlayerScreen", {
+    //   code: code,
+    // });
+  };
+
   const handleLogOut = () => {
     deleteStoreData();
     navigation.reset({
@@ -75,20 +90,22 @@ const homeScreen = ({ navigation }) => {
     });
   };
 
-  // const handleClickPreviousGame = async () => {
-  //   await setGameCode(previousGames);
-  //   navigation.navigate("PlayerScreen", {
-  //     code: previousGames,
-  //   });
-  // };
+  const Item = ({ code, alive, admin }) => (
+    <Pressable onPress={handleEnterPreviousGame}>
+      <View style={styles.listContainer}>
+        <View style={styles.textList}>
+          <Text style={{ marginRight: 20 }}>{code}</Text>
 
-  const Item = ({ code }) => (
-    <View>
-      <Text>{code}</Text>
-    </View>
+          {alive ? <Text>Vivant</Text> : <Text>Mort</Text>}
+          {admin ? <Text>Admin</Text> : null}
+        </View>
+      </View>
+    </Pressable>
   );
 
-  const renderItem = ({ item }) => <Item code={item} />;
+  const renderItem = ({ item }) => (
+    <Item code={item.code} alive={item.alive} admin={item.admin} />
+  );
 
   return (
     <View style={styles.container}>
@@ -105,36 +122,38 @@ const homeScreen = ({ navigation }) => {
         </Pressable>
       </View>
 
-      <View style={styles.enterGameContainer}>
-        <View style={styles.inputCodeContainer}>
-          <TextInput
-            placeholder='Code de la partie'
-            autoCapitalize='none'
-            type='text'
-            value={code}
-            onChangeText={(text) => setCode(text)}
-            errorMessage={error}
+      {/* <View style={styles.enterGameContainer}> */}
+      <View style={styles.inputCodeContainer}>
+        <TextInput
+          placeholder='Code de la partie'
+          autoCapitalize='none'
+          type='text'
+          value={code}
+          onChangeText={(text) => setCode(text)}
+          errorMessage={error}
+        />
+        <Button
+          onPress={handleEnterGame}
+          title='Entrer'
+          color='#841584'
+          accessibilityLabel='Learn more about this purple button'
+        />
+      </View>
+      {/* </View> */}
+
+      {previousGames ? (
+        <View style={styles.previousGameContainer}>
+          {/* <Text style={styles.previousCodeText}>Partie en cours</Text> */}
+
+          <FlatList
+            data={previousGames}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
           />
         </View>
-        {previousGames ? (
-          <View style={styles.previousGameContainer}>
-            <Pressable
-              style={styles.inputPreviousCodePressable}
-              // onPress={handleClickPreviousGame}
-            >
-              <Text style={styles.inputPreviousCodeText}>Partie en cours</Text>
-              {/* <Text style={styles.inputPreviousCodeText}>{previousGames}</Text> */}
-              <FlatList
-                data={previousGames}
-                renderItem={renderItem}
-                keyExtractor={(item) => item}
-              />
-            </Pressable>
-          </View>
-        ) : (
-          <ActivityIndicator size='large' color='#222831' />
-        )}
-      </View>
+      ) : (
+        <ActivityIndicator size='large' color='#222831' />
+      )}
     </View>
   );
 };
@@ -168,18 +187,19 @@ const styles = StyleSheet.create({
   },
 
   enterGameContainer: {
-    flex: 2,
-    justifyContent: "space-around",
+    flex: 1,
+    justifyContent: "center",
     backgroundColor: "#c8cfd9",
     borderRadius: 20,
   },
 
   inputCodeContainer: {
-    width: "100%",
+    // width: "100%",
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
+    backgroundColor: "#c8cfd9",
   },
   inputCode: {
     color: "black",
@@ -190,26 +210,37 @@ const styles = StyleSheet.create({
   },
 
   previousGameContainer: {
-    flex: 1,
-    flexDirection: "row",
+    flex: 2,
+    width: "100%",
+    // flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#8292a8",
+    // backgroundColor: "#8292a8",
     borderRadius: 20,
     marginBottom: 10,
-    marginHorizontal: 40,
   },
   inputPreviousCodePressable: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  inputPreviousCodeText: {
+  previousCodeText: {
     fontSize: 16,
   },
-  button: {
-    // width: 200,
-    marginTop: 10,
-    marginBottom: 30,
+
+  listContainer: {
+    flexDirection: "row",
+    backgroundColor: "#FFF",
+    margin: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 40,
+    borderRadius: 20,
+  },
+
+  textList: {
+    // flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
 });

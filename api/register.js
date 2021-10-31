@@ -12,7 +12,6 @@ const login = async ({ firstname, lastname, email, password }) => {
         password: password,
       },
     });
-    console.log(user);
     if (user) {
       return true;
     } else {
