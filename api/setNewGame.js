@@ -9,7 +9,7 @@ const setNewGame = async () => {
 
       const newGame = await axios({
         method: "post",
-        url: "http://localhost:3000/newgame",
+        url: "http://192.168.1.48:3000/newgame",
         data: {
           code: randomCode,
         },

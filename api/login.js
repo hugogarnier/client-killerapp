@@ -5,12 +5,13 @@ const login = async ({ email, password }) => {
   try {
     const user = await axios({
       method: "post",
-      url: "http://localhost:3000/login",
+      url: `http://192.168.1.48:3000/login`,
       data: {
         email: email,
         password: password,
       },
     });
+
     const token = user.headers.authorization.replace("Bearer ", "");
     storeData(token);
 

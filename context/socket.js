@@ -1,6 +1,7 @@
 import { createContext } from "react";
 import { io } from "socket.io-client";
-// import { SOCKET_URL } from "config";
 
-export const socket = io("http://localhost:3000");
+export const socket = io("http://192.168.1.48:3000", {
+  transports: ["websocket"],
+});
 export const SocketContext = createContext();

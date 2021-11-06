@@ -1,15 +1,14 @@
 import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
-const setGameCode = async (code) => {
-  let isGameExists = false;
+const setStartGame = async (code) => {
   try {
     const token = await getStoreData();
 
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://192.168.1.48:3000/entergame`,
+        url: `http://192.168.1.48:3000/startgame`,
         data: {
           code: code,
         },
@@ -19,17 +18,15 @@ const setGameCode = async (code) => {
       });
 
       if (game) {
-        isGameExists = true;
-        return { isGameExists };
+        return true;
       } else {
-        return { isGameExists };
+        return false;
       }
     }
-    return { isGameExists };
+    return false;
   } catch (error) {
-    console.log(error);
-    return { isGameExists };
+    return false;
   }
 };
 
-export default setGameCode;
+export default setStartGame;

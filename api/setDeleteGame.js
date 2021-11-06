@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
-const setGameCode = async (code) => {
+const setDeleteGame = async (code) => {
   let isGameExists = false;
   try {
     const token = await getStoreData();
@@ -9,7 +9,7 @@ const setGameCode = async (code) => {
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://192.168.1.48:3000/entergame`,
+        url: `http://192.168.1.48:3000/deletegame`,
         data: {
           code: code,
         },
@@ -32,4 +32,4 @@ const setGameCode = async (code) => {
   }
 };
 
-export default setGameCode;
+export default setDeleteGame;
