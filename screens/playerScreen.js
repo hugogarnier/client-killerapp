@@ -30,6 +30,8 @@ const PlayerStartScreen = ({ route, navigation }) => {
   const [started, setStarted] = useState(false);
   const [close, setClose] = useState(false);
   const [admin, setAdmin] = useState("");
+  const [playerToKill, setPlayerToKill] = useState("");
+  const [action, setAction] = useState("");
 
   useEffect(() => {
     async function getUser() {
@@ -46,6 +48,8 @@ const PlayerStartScreen = ({ route, navigation }) => {
 
       socket.on("startGame", (data) => {
         setStarted(data.started);
+        setAction(data.action);
+        setPlayerToKill(data.playerToKill);
       });
       socket.emit("startGame", token, code);
     }
@@ -105,8 +109,8 @@ const PlayerStartScreen = ({ route, navigation }) => {
         ) : null}
         {started && (
           <View>
-            <Text>Qui tuer</Text>
-            <Text>Action</Text>
+            <Text>Qui tuer: {playerToKill}</Text>
+            <Text>Action: {action}</Text>
             <Button title='Tuer' color='#841584' />
           </View>
         )}
