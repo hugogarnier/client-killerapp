@@ -8,7 +8,7 @@ const setStartGame = async (code) => {
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://192.168.1.48:3000/startgame`,
+        url: `http://localhost:3000/startgame`,
         data: {
           code: code,
         },

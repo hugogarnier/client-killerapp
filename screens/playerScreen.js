@@ -1,29 +1,15 @@
 import React, { useState, useEffect, useLayoutEffect, useContext } from "react";
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Modal,
-  Text,
-  Button,
-  Card,
-  Image,
-} from "react-native";
+import { StyleSheet, View, Pressable, Text, Button } from "react-native";
 import { SocketContext } from "../context/socket";
 import { Ionicons } from "@expo/vector-icons";
-import { io } from "socket.io-client";
 import { getStoreData } from "../api/asyncStorage";
-import { ScreenStackHeaderLeftView } from "react-native-screens";
-import setStartGame from "../api/setStartGame";
 
-// import ViewPlayer from "../Components/ViewPlayer";
-// import WaitingStartingGame from "../Components/WaitingStartingGame";
+import setStartGame from "../api/setStartGame";
+import setKill from "../api/setKill";
 
 const PlayerStartScreen = ({ route, navigation }) => {
   const socket = useContext(SocketContext);
   const { code } = route.params;
-  const [visibleModal, setVisibleModal] = useState(false);
-  const [isGameStarted, setIsGameStarted] = useState(false);
   const [firstname, setFirstname] = useState("");
   const [lastname, setLastname] = useState("");
   const [alive, setAlive] = useState(false);
@@ -32,6 +18,8 @@ const PlayerStartScreen = ({ route, navigation }) => {
   const [admin, setAdmin] = useState("");
   const [playerToKill, setPlayerToKill] = useState("");
   const [action, setAction] = useState("");
+  const [winner, setWinner] = useState(false);
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     async function getUser() {
@@ -46,6 +34,12 @@ const PlayerStartScreen = ({ route, navigation }) => {
       });
       socket.emit("userInfo", token, code);
 
+      socket.on("kill", (data) => {
+        setAlive(data.alive);
+        setWinner(data.winner);
+      });
+      socket.emit("kill", token);
+
       socket.on("startGame", (data) => {
         setStarted(data.started);
         setAction(data.action);
@@ -57,7 +51,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
     return () => {
       socket.off("userInfo");
     };
-  }, [close, started, alive, lastname, firstname]);
+  }, [close, started, alive, lastname, firstname, winner, update]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -80,6 +74,12 @@ const PlayerStartScreen = ({ route, navigation }) => {
   const handleStartGame = async () => {
     setStartGame(code).then(() => {
       setStarted(true);
+    });
+  };
+
+  const handleKill = () => {
+    setKill(code).then(() => {
+      setUpdate(!update);
     });
   };
 
@@ -107,11 +107,12 @@ const PlayerStartScreen = ({ route, navigation }) => {
             color='#841584'
           />
         ) : null}
-        {started && (
+        {winner && <Text>GAGNANT</Text>}
+        {started && alive && (
           <View>
             <Text>Qui tuer: {playerToKill}</Text>
             <Text>Action: {action}</Text>
-            <Button title='Tuer' color='#841584' />
+            <Button onPress={handleKill} title='Tuer' color='#841584' />
           </View>
         )}
       </View>

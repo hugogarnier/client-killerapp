@@ -2,14 +2,13 @@ import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
 const setDeleteGame = async (code) => {
-  let isGameExists = false;
   try {
     const token = await getStoreData();
 
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://192.168.1.48:3000/deletegame`,
+        url: `http://localhost:3000/deletegame`,
         data: {
           code: code,
         },
@@ -18,17 +17,12 @@ const setDeleteGame = async (code) => {
         },
       });
 
-      if (game) {
-        isGameExists = true;
-        return { isGameExists };
-      } else {
-        return { isGameExists };
-      }
+      return true;
     }
-    return { isGameExists };
+    return false;
   } catch (error) {
-    console.log(error);
-    return { isGameExists };
+    console.log(error, "test");
+    return false;
   }
 };
 

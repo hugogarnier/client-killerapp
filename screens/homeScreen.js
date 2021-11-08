@@ -32,6 +32,7 @@ const homeScreen = ({ navigation }) => {
   const [error, setError] = useState(false);
   // const [previousGames, setPreviousGames] = useState([]);
   const [previousGame, setPreviousGame] = useState("");
+  const [update, setUpdate] = useState(false);
 
   useEffect(() => {
     async function getPreviousGame() {
@@ -39,9 +40,10 @@ const homeScreen = ({ navigation }) => {
 
       // if one game
 
-      socket.emit("previousCode", token, (data) => {
+      socket.on("previousCode", (data) => {
         setPreviousGame(data.previousCode);
       });
+      socket.emit("previousCode", token, code);
 
       //if more than one game
       // socket.emit("previousCodes", token, (data) => {
@@ -51,7 +53,7 @@ const homeScreen = ({ navigation }) => {
     if (isFocused) {
       getPreviousGame();
     }
-  }, [previousGame, isFocused]);
+  }, [previousGame, isFocused, update]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -99,8 +101,8 @@ const homeScreen = ({ navigation }) => {
   };
 
   const handleDeleteOwnGame = () => {
-    setDeleteGame(previousGame).then(({ isGameExists }) => {
-      isGameExists && setPreviousGame("");
+    setDeleteGame(previousGame).then(() => {
+      setUpdate(!update);
     });
   };
 
