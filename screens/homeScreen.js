@@ -10,7 +10,7 @@ import {
 import * as Svg from "react-native-svg";
 import { useIsFocused } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Feather } from "@expo/vector-icons";
 import { SocketContext } from "../context/socket";
 
 import { deleteStoreData, getStoreData } from "../api/asyncStorage";
@@ -92,7 +92,7 @@ const homeScreen = ({ navigation }) => {
     setGameCode(previousGame).then(({ isGameExists }) => {
       isGameExists &&
         navigation.navigate("PlayerScreen", {
-          code: code,
+          code: previousGame,
         });
     });
   };
@@ -179,7 +179,7 @@ const homeScreen = ({ navigation }) => {
             }}
             style={styles.input}
           />
-          <Button onPress={handleEnterGame} title='Entrer' color='#841584' />
+          <Button onPress={handleEnterGame} title='Entrer' color='black' />
         </View>
         <View>
           {error && <Text style={styles.inputCodeError}>Code invalide</Text>}
@@ -192,10 +192,16 @@ const homeScreen = ({ navigation }) => {
             style={styles.previousGamePressable}
             onPress={handleEnterPreviousGame}
           >
-            <Text style={styles.previousGameText}>{previousGame}</Text>
+            <Text style={styles.previousGameText}>
+              Rejoindre la partie en cours - {previousGame}
+            </Text>
           </Pressable>
-          <Pressable onPress={handleDeleteOwnGame}>
-            <Text>Supprimer</Text>
+
+          <Pressable
+            style={styles.previousGameDelete}
+            onPress={handleDeleteOwnGame}
+          >
+            <Feather name='trash' size={30} color='black' />
           </Pressable>
         </View>
       ) : null}
@@ -228,8 +234,7 @@ const styles = StyleSheet.create({
   },
 
   startNewGameContainer: {
-    // width: "100%",
-    flex: 1,
+    height: 100,
     flexDirection: "row",
     marginBottom: 20,
     backgroundColor: "#8292a8",
@@ -245,10 +250,8 @@ const styles = StyleSheet.create({
   },
 
   enterGameContainer: {
-    flex: 1,
     width: "100%",
-    // justifyContent: "center",
-    // alignItems: "center",
+    height: 60,
   },
 
   inputCodeContainer: {
@@ -269,18 +272,30 @@ const styles = StyleSheet.create({
   inputCodeError: {
     position: "absolute",
     bottom: 20,
-    left: 20,
+    right: 150,
     color: "red",
     borderBottomWidth: 0,
   },
 
   previousGameContainer: {
-    flex: 2,
-    justifyContent: "center",
+    //flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
+    marginTop: 20,
+    width: "100%",
+    height: 60,
+    backgroundColor: "#8292a8",
+    borderRadius: 20,
   },
   previousGamePressable: {
-    backgroundColor: "white",
-    padding: 20,
+    paddingVertical: 20,
+    paddingLeft: 20,
+    paddingRight: 10,
+  },
+  previousGameDelete: {
+    paddingVertical: 10,
+    paddingLeft: 20,
+    paddingRight: 30,
   },
 });

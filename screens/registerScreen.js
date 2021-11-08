@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Button, TextInput, Text } from "react-native";
+import { StyleSheet, View, Pressable, TextInput, Text } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import register from "../api/register";
+
+import Control from "../assets/control.svg";
 
 const registerScreen = ({ navigation }) => {
   const [firstname, setFirstname] = useState("");
@@ -37,19 +39,22 @@ const registerScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar style='light' />
+      <Control width={200} height={100} />
 
-      <Text h3 style={{ color: "white", marginBottom: 50 }}>
+      <Text h3 style={{ color: "white", marginVertical: 20, fontSize: 18 }}>
         Créer un compte
       </Text>
 
       <View style={styles.inputContainer}>
         <TextInput
+          style={styles.inputText}
           autoCapitalize='none'
           placeholder='prénom *'
           value={firstname}
           onChangeText={(name) => setFirstname(name)}
         />
         <TextInput
+          style={styles.inputText}
           autoCapitalize='none'
           placeholder='nom *'
           value={lastname}
@@ -57,6 +62,7 @@ const registerScreen = ({ navigation }) => {
         />
 
         <TextInput
+          style={styles.inputText}
           placeholder='email *'
           autoCapitalize='none'
           value={email}
@@ -66,20 +72,22 @@ const registerScreen = ({ navigation }) => {
         />
 
         <TextInput
+          style={styles.inputText}
           placeholder='mot de passe *'
           value={password}
           onChangeText={(password) => setPassword(password)}
           secureTextEntry
         />
       </View>
-      <Button onPress={handlePress} title='Créer le compte' />
-      <View style={styles.signInContainer}>
-        <Text style={{ color: "white" }}>Déjà un compte ?</Text>
-        <Button
-          title='Se connecter'
-          onPress={() => navigation.navigate("Login")}
-        />
-      </View>
+      <Pressable style={styles.containerButton2} onPress={handlePress}>
+        <Text style={styles.containerButtonText}>Créer le compte</Text>
+      </Pressable>
+      <Pressable
+        style={[styles.containerButton2, styles.containerButton]}
+        onPress={() => navigation.navigate("Login")}
+      >
+        <Text style={styles.containerButtonText}>Déjà un compte ?</Text>
+      </Pressable>
     </View>
   );
 };
@@ -92,24 +100,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 10,
-    // backgroundColor: "#222831",
-  },
-  signInContainer: {
-    padding: 20,
+    backgroundColor: "#222831",
   },
   inputContainer: {
     width: 300,
-  },
-  containerButton: {
-    width: 200,
-    marginTop: 10,
-    borderRadius: 20,
+    padding: 20,
   },
   inputText: {
-    color: "black",
-    borderBottomWidth: 0,
-    backgroundColor: "#e5e5e5",
     borderRadius: 20,
     paddingStart: 20,
+    padding: 15,
+    marginBottom: 20,
+    backgroundColor: "#d3d3d3",
+    fontSize: 16,
+  },
+  containerButton2: {
+    width: 200,
+    height: 60,
+    marginBottom: 20,
+    backgroundColor: "#8292a8",
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  containerButton: {
+    backgroundColor: "#c8cdef",
+  },
+  containerButtonText: {
+    fontSize: 18,
   },
 });

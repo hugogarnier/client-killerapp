@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useLayoutEffect, useContext } from "react";
-import { StyleSheet, View, Pressable, Text, Button } from "react-native";
+import { StyleSheet, View, Pressable, Text, Share } from "react-native";
 import { SocketContext } from "../context/socket";
-import { Ionicons } from "@expo/vector-icons";
 import { getStoreData } from "../api/asyncStorage";
+import { Ionicons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 
+import Old from "../assets/old.svg";
 import setStartGame from "../api/setStartGame";
 import setKill from "../api/setKill";
 
@@ -50,6 +52,8 @@ const PlayerStartScreen = ({ route, navigation }) => {
     getUser();
     return () => {
       socket.off("userInfo");
+      socket.off("kill");
+      socket.off("startGame");
     };
   }, [close, started, alive, lastname, firstname, winner, update]);
 
@@ -83,6 +87,25 @@ const PlayerStartScreen = ({ route, navigation }) => {
     });
   };
 
+  const onShare = async () => {
+    try {
+      const result = await Share.share({
+        message: code,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
   const handleEndGame = () => {
     endGame(code);
     navigation.navigate("Dashboard");
@@ -91,28 +114,33 @@ const PlayerStartScreen = ({ route, navigation }) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerInfo}>
-        <Text>{code}</Text>
-        {alive ? <Text>Alive</Text> : <Text>Dead</Text>}
-        {started ? <Text>Started</Text> : <Text>No Started</Text>}
-        {close ? <Text>Close</Text> : <Text>Not Close</Text>}
-        {admin ? <Text>Admin yes</Text> : <Text>Not admin</Text>}
-        <Text>{firstname}</Text>
-        <Text>{lastname}</Text>
+        <Old width={300} height={300} />
+        <Pressable style={styles.code}>
+          <Text style={{ fontSize: 30 }}>
+            {code}{" "}
+            <AntDesign
+              name='sharealt'
+              size={30}
+              color='black'
+              onPress={onShare}
+            />
+          </Text>
+        </Pressable>
       </View>
       <View style={styles.containerAction}>
         {admin && !started ? (
-          <Button
-            onPress={handleStartGame}
-            title='Lancer la partie'
-            color='#841584'
-          />
+          <Pressable style={styles.containerButton} onPress={handleStartGame}>
+            <Text style={styles.containerButtonText}>Lancer la partie</Text>
+          </Pressable>
         ) : null}
         {winner && <Text>GAGNANT</Text>}
         {started && alive && (
-          <View>
-            <Text>Qui tuer: {playerToKill}</Text>
-            <Text>Action: {action}</Text>
-            <Button onPress={handleKill} title='Tuer' color='#841584' />
+          <View style={styles.containerCard}>
+            <Text style={styles.text}>Qui tuer: {playerToKill}</Text>
+            <Text style={styles.text}>Action: {action}</Text>
+            <Pressable style={styles.containerButton} onPress={handleKill}>
+              <Text style={styles.containerButtonText}>TUER</Text>
+            </Pressable>
           </View>
         )}
       </View>
@@ -132,12 +160,45 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "white",
+  },
+  code: {
+    fontSize: 30,
+    padding: 20,
+    borderRadius: 20,
+    backgroundColor: "#8292a8",
   },
   containerAction: {
-    flex: 2,
+    flex: 1,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "gray",
+  },
+  containerButton: {
+    width: 200,
+    height: 60,
+    marginBottom: 20,
+    backgroundColor: "#8292a8",
+    borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  containerButton2: {
+    backgroundColor: "#8292a8",
+  },
+  containerButtonText: {
+    fontSize: 18,
+  },
+
+  containerCard: {
+    flex: 1,
+    width: "100%",
+    // height: 300,
+    marginTop: 40,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#c8cdef",
+  },
+  text: {
+    fontSize: 24,
+    marginBottom: 20,
   },
 });

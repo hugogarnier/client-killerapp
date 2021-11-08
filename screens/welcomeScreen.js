@@ -1,6 +1,8 @@
 import React from "react";
-import { StyleSheet, View, Button, Image, Text } from "react-native";
+import { StyleSheet, View, Button, Text, Pressable } from "react-native";
 import { StatusBar } from "expo-status-bar";
+
+import Chilling from "../assets/chilling.svg";
 
 export default function welcomeScreen({ navigation }) {
   return (
@@ -9,17 +11,19 @@ export default function welcomeScreen({ navigation }) {
       <Text style={{ color: "white", marginBottom: 30, fontSize: 20 }}>
         Bienvenue sur le jeu du Killer
       </Text>
-
-      <Button
-        containerStyle={styles.containerButton}
+      <Chilling width={350} height={400} />
+      <Pressable
+        style={styles.containerButton}
         onPress={() => navigation.navigate("Login")}
-        title='Se connecter'
-      />
-      <Button
-        containerStyle={styles.containerButton}
+      >
+        <Text style={styles.containerButtonText}>Se connecter</Text>
+      </Pressable>
+      <Pressable
+        style={[styles.containerButton, styles.containerButton2]}
         onPress={() => navigation.navigate("Register")}
-        title='Créer un compte'
-      />
+      >
+        <Text style={styles.containerButtonText}>Créer un compte</Text>
+      </Pressable>
     </View>
   );
 }
@@ -35,7 +39,17 @@ const styles = StyleSheet.create({
 
   containerButton: {
     width: 200,
-    marginTop: 10,
+    height: 60,
+    marginBottom: 20,
+    backgroundColor: "#8292a8",
     borderRadius: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  containerButton2: {
+    backgroundColor: "#c8cdef",
+  },
+  containerButtonText: {
+    fontSize: 18,
   },
 });
