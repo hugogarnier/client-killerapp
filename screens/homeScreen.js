@@ -2,16 +2,12 @@ import React, { useState, useEffect, useLayoutEffect, useContext } from "react";
 import {
   StyleSheet,
   View,
-  Alert,
   Pressable,
-  ActivityIndicator,
   TextInput,
   Text,
-  FlatList,
   Button,
-  TouchableOpacity,
-  SafeAreaView,
 } from "react-native";
+import * as Svg from "react-native-svg";
 import { useIsFocused } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +17,7 @@ import { deleteStoreData, getStoreData } from "../api/asyncStorage";
 import setNewGame from "../api/setNewGame";
 import setGameCode from "../api/setGameCode";
 import setDeleteGame from "../api/setDeleteGame";
+import Player from "../assets/player.svg";
 
 const homeScreen = ({ navigation }) => {
   const socket = useContext(SocketContext);
@@ -155,6 +152,8 @@ const homeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <StatusBar style='light' />
+
+      <Player width={350} height={400} />
       {previousGame ? null : (
         <View style={styles.startNewGameContainer}>
           <Pressable
