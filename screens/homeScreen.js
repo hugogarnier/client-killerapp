@@ -7,7 +7,6 @@ import {
   Text,
   Button,
 } from "react-native";
-import * as Svg from "react-native-svg";
 import { useIsFocused } from "@react-navigation/native";
 import { StatusBar } from "expo-status-bar";
 import { Ionicons, Feather } from "@expo/vector-icons";
@@ -22,10 +21,7 @@ import Player from "../assets/player.svg";
 const homeScreen = ({ navigation }) => {
   const socket = useContext(SocketContext);
   const isFocused = useIsFocused();
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [code, setCode] = useState("");
-  const [previousCode, setPreviousCode] = useState("");
   const [error, setError] = useState(false);
   // const [previousGames, setPreviousGames] = useState([]);
   const [previousGame, setPreviousGame] = useState("");

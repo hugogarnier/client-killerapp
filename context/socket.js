@@ -1,7 +1,7 @@
 import { createContext } from "react";
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:3000", {
+export const socket = io("https://killer-app-api.herokuapp.com", {
   transports: ["websocket"],
 });
 export const SocketContext = createContext();

@@ -4,7 +4,7 @@ const login = async ({ firstname, lastname, email, password }) => {
   try {
     const user = await axios({
       method: "post",
-      url: "http://localhost:3000/register",
+      url: "https://killer-app-api.herokuapp.com/register",
       data: {
         firstname: firstname,
         lastname: lastname,

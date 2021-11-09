@@ -9,7 +9,7 @@ const setGameCode = async (code) => {
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://localhost:3000/entergame`,
+        url: `https://killer-app-api.herokuapp.com/entergame`,
         data: {
           code: code,
         },

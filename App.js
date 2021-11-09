@@ -12,8 +12,6 @@ import loadingScreen from "./screens/loadingScreen";
 import welcomeScreen from "./screens/welcomeScreen";
 import homeScreen from "./screens/homeScreen";
 import playerScreen from "./screens/playerScreen";
-// import startGameScreen from "./screens/startGameScreen";
-// import adminScreen from "./screens/adminScreen";
 
 LogBox.ignoreLogs(["Setting a timer for a long period of time"]);
 
@@ -45,8 +43,6 @@ export default function App() {
             <Stack.Screen name={"Register"} component={registerScreen} />
             <Stack.Screen name={"Dashboard"} component={homeScreen} />
             <Stack.Screen name={"PlayerScreen"} component={playerScreen} />
-            {/* <Stack.Screen name={"StartGame"} component={startGameScreen} /> */}
-            {/* <Stack.Screen name={"Admin"} component={adminScreen} /> */}
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaProvider>

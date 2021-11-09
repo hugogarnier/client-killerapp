@@ -8,7 +8,7 @@ const setDeleteGame = async (code) => {
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://localhost:3000/deletegame`,
+        url: `https://killer-app-api.herokuapp.com/deletegame`,
         data: {
           code: code,
         },

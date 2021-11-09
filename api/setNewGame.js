@@ -9,7 +9,7 @@ const setNewGame = async () => {
 
       const newGame = await axios({
         method: "post",
-        url: "http://localhost:3000/newgame",
+        url: "hhttps://killer-app-api.herokuapp.com/newgame",
         data: {
           code: randomCode,
         },
