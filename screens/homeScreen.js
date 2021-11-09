@@ -31,6 +31,8 @@ const homeScreen = ({ navigation }) => {
     async function getPreviousGame() {
       const token = await getStoreData();
 
+      socket.emit("newUser", token);
+
       // if one game
 
       socket.on("previousCode", (data) => {
@@ -43,9 +45,13 @@ const homeScreen = ({ navigation }) => {
       //   setPreviousGames(data.previousCodes);
       // });
     }
-    if (isFocused) {
-      getPreviousGame();
-    }
+    // if (isFocused) {
+    //   getPreviousGame();
+    // }
+    getPreviousGame();
+    return () => {
+      socket.off("previousCode");
+    };
   }, [previousGame, isFocused, update]);
 
   useLayoutEffect(() => {

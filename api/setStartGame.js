@@ -8,7 +8,8 @@ const setStartGame = async (code) => {
     if (token) {
       const game = await axios({
         method: "post",
-        url: `https://killer-app-api.herokuapp.com/startgame`,
+        url: `http://192.168.86.247:3000/startgame`,
+        // url: `https://killer-app-api.herokuapp.com/startgame`,
         data: {
           code: code,
         },

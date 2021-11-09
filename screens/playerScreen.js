@@ -26,6 +26,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
   useEffect(() => {
     async function getUser() {
       const token = await getStoreData();
+
       socket.on("userInfo", (data) => {
         setFirstname(data.firstname);
         setLastname(data.lastname);
@@ -36,26 +37,78 @@ const PlayerStartScreen = ({ route, navigation }) => {
       });
       socket.emit("userInfo", token, code);
 
-      socket.on("kill", (data) => {
-        setAlive(data.alive);
-        setWinner(data.winner);
-      });
-      socket.emit("kill", token);
+      // socket.on("kill", (data) => {
+      //   setAlive(data.alive);
+      //   setWinner(data.winner);
+      // });
+      // socket.emit("kill", token);
 
-      socket.on("startGame", (data) => {
-        setStarted(data.started);
-        setAction(data.action);
-        setPlayerToKill(data.playerToKill);
-      });
-      socket.emit("startGame", token, code);
+      // socket.on("startGame", (data) => {
+      //   setStarted(data.started);
+      //   setAction(data.action);
+      //   setPlayerToKill(data.playerToKill);
+      // });
+      // socket.emit("startGame", token, code);
     }
     getUser();
     return () => {
       socket.off("userInfo");
-      socket.off("kill");
+      // socket.off("kill");
+      // socket.off("startGame");
+    };
+  }, [close /*, started, alive, lastname, firstname ,winner, update*/]);
+
+  useEffect(() => {
+    const startGame = async () => {
+      try {
+        const token = await getStoreData();
+        if (started) {
+          socket.on("startGame", async (data) => {
+            if (data !== undefined) {
+              // console.log(data.users);
+              const user = await data.users.filter(
+                (elem) => elem.token === token
+              );
+              const action = user[0].status.action;
+              const playerToKill = user[0].status.playerToKill;
+              const winner = user[0].status.winner;
+              // console.log(user);
+              setStarted(data.started);
+              setAction(action);
+              setPlayerToKill(playerToKill);
+              setWinner(winner);
+            }
+          });
+          socket.emit("startGame", token, code);
+        }
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    startGame();
+    return () => {
       socket.off("startGame");
     };
-  }, [close, started, alive, lastname, firstname, winner, update]);
+  }, [started]);
+
+  useEffect(() => {
+    const kill = async () => {
+      const token = await getStoreData();
+      try {
+        socket.on("kill", (data) => {
+          setAlive(data.alive);
+          setWinner(data.winner);
+        });
+        socket.emit("kill", token);
+      } catch (error) {
+        console.log(error.message);
+      }
+    };
+    kill();
+    return () => {
+      socket.off("kill");
+    };
+  }, [winner, update]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -133,14 +186,20 @@ const PlayerStartScreen = ({ route, navigation }) => {
             <Text style={styles.containerButtonText}>Lancer la partie</Text>
           </Pressable>
         ) : null}
-        {winner && <Text>GAGNANT</Text>}
+
         {started && alive && (
           <View style={styles.containerCard}>
-            <Text style={styles.text}>Qui tuer: {playerToKill}</Text>
-            <Text style={styles.text}>Action: {action}</Text>
-            <Pressable style={styles.containerButton} onPress={handleKill}>
-              <Text style={styles.containerButtonText}>TUER</Text>
-            </Pressable>
+            {winner ? (
+              <Text>GAGNANT</Text>
+            ) : (
+              <>
+                <Text style={styles.text}>Qui tuer: {playerToKill}</Text>
+                <Text style={styles.text}>Action: {action}</Text>
+                <Pressable style={styles.containerButton} onPress={handleKill}>
+                  <Text style={styles.containerButtonText}>TUER</Text>
+                </Pressable>
+              </>
+            )}
           </View>
         )}
       </View>
