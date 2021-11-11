@@ -1,15 +1,15 @@
 import axios from "axios";
 import { getStoreData } from "./asyncStorage";
 
-const setDeleteGame = async (code) => {
+const setDeleteGame = async (code, token) => {
   try {
-    const token = await getStoreData();
+    // const token = await getStoreData();
 
     if (token) {
       const game = await axios({
         method: "post",
-        url: `http://192.168.86.247:3000/deletegame`,
-        // url: `https://killer-app-api.herokuapp.com/deletegame`,
+        // url: `https://192.168.86.33/deletegame`,
+        url: `https://killer-app-api.herokuapp.com/deletegame`,
         data: {
           code: code,
         },

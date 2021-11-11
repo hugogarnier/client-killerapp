@@ -26,19 +26,21 @@ const homeScreen = ({ navigation }) => {
   // const [previousGames, setPreviousGames] = useState([]);
   const [previousGame, setPreviousGame] = useState("");
   const [update, setUpdate] = useState(false);
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     async function getPreviousGame() {
-      const token = await getStoreData();
+      const newToken = await getStoreData();
 
-      socket.emit("newUser", token);
+      socket.emit("newUser", newToken);
 
       // if one game
 
       socket.on("previousCode", (data) => {
         setPreviousGame(data.previousCode);
       });
-      socket.emit("previousCode", token, code);
+      socket.emit("previousCode", newToken, code);
+      setToken(newToken);
 
       //if more than one game
       // socket.emit("previousCodes", token, (data) => {
@@ -76,6 +78,7 @@ const homeScreen = ({ navigation }) => {
       randomCode &&
         navigation.navigate("PlayerScreen", {
           code: randomCode,
+          token: token,
         });
     });
   };
@@ -85,6 +88,7 @@ const homeScreen = ({ navigation }) => {
       isGameExists
         ? navigation.navigate("PlayerScreen", {
             code: code,
+            token: code,
           })
         : setError(true);
     });
@@ -95,12 +99,13 @@ const homeScreen = ({ navigation }) => {
       isGameExists &&
         navigation.navigate("PlayerScreen", {
           code: previousGame,
+          token: token,
         });
     });
   };
 
   const handleDeleteOwnGame = () => {
-    setDeleteGame(previousGame).then(() => {
+    setDeleteGame(previousGame, token).then(() => {
       setUpdate(!update);
     });
   };

@@ -76,7 +76,7 @@ const registerScreen = ({ navigation }) => {
           placeholder='mot de passe *'
           value={password}
           onChangeText={(password) => setPassword(password)}
-          secureTextEntry
+          secureTextEntry={true}
         />
       </View>
       <Pressable style={styles.containerButton2} onPress={handlePress}>

@@ -11,9 +11,7 @@ import setKill from "../api/setKill";
 
 const PlayerStartScreen = ({ route, navigation }) => {
   const socket = useContext(SocketContext);
-  const { code } = route.params;
-  const [firstname, setFirstname] = useState("");
-  const [lastname, setLastname] = useState("");
+  const { code, token } = route.params;
   const [alive, setAlive] = useState(false);
   const [started, setStarted] = useState(false);
   const [close, setClose] = useState(false);
@@ -25,17 +23,15 @@ const PlayerStartScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     async function getUser() {
-      const token = await getStoreData();
-
       socket.on("userInfo", (data) => {
-        setFirstname(data.firstname);
-        setLastname(data.lastname);
         setAlive(data.alive);
         setStarted(data.started);
         setClose(data.close);
         setAdmin(data.admin);
       });
       socket.emit("userInfo", token, code);
+
+      // setToken(newToken);
 
       // socket.on("kill", (data) => {
       //   setAlive(data.alive);
@@ -60,29 +56,33 @@ const PlayerStartScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const startGame = async () => {
-      try {
-        const token = await getStoreData();
-        if (started) {
+      if (started) {
+        try {
+          // const token = await getStoreData();
+
           socket.on("startGame", async (data) => {
-            if (data !== undefined) {
+            if (data !== undefined || data.users !== undefined) {
               // console.log(data.users);
-              const user = await data.users.filter(
-                (elem) => elem.token === token
-              );
-              const action = user[0].status.action;
-              const playerToKill = user[0].status.playerToKill;
-              const winner = user[0].status.winner;
+
+              const user = data.users.filter((elem) => elem.token === token);
+
+              if (user) {
+                const action = user[0].status.action;
+                const playerToKill = user[0].status.playerToKill;
+                const winner = user[0].status.winner;
+                setStarted(data.started);
+                setAction(action);
+                setPlayerToKill(playerToKill);
+                setWinner(winner);
+              }
+
               // console.log(user);
-              setStarted(data.started);
-              setAction(action);
-              setPlayerToKill(playerToKill);
-              setWinner(winner);
             }
           });
           socket.emit("startGame", token, code);
+        } catch (error) {
+          console.log(error.message);
         }
-      } catch (error) {
-        console.log(error.message);
       }
     };
     startGame();
@@ -93,7 +93,6 @@ const PlayerStartScreen = ({ route, navigation }) => {
 
   useEffect(() => {
     const kill = async () => {
-      const token = await getStoreData();
       try {
         socket.on("kill", (data) => {
           setAlive(data.alive);
@@ -108,7 +107,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
     return () => {
       socket.off("kill");
     };
-  }, [winner, update]);
+  }, [update]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -189,7 +188,7 @@ const PlayerStartScreen = ({ route, navigation }) => {
 
         {started && alive && (
           <View style={styles.containerCard}>
-            {winner ? (
+            {winner && alive ? (
               <Text>GAGNANT</Text>
             ) : (
               <>
